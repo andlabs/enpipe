@@ -124,21 +124,45 @@ void copyoutfile(void)
 	close(fid);
 }		
 
+/* usage:  report a syntax error and quit */
+void usage(void)
+{
+	fprintf(stderr, "usage: %s [-o outfile] command-line\n", argv0);
+	exit(EXIT_FAILURE);
+}
+
 int main(int argc, char *argv[])
 {
 	char **pline;
 	int exitstatus;
+	int opt;
+	extern char *optarg; /* getopt stuff */
+	extern int opterr, optind;
 
-	argv0 = argv[0]; argc--; argv++;
-	if (strcmp(argv[0], "-o") == 0) {
-		outfile = argv[1];
-		argc--; argc--;
-		argv++; argv++;
+	argv0 = argv[0];
+	opterr = 0; /* disable library diagonstics */
+	setenv("POSIXLY_CORRECT", "1", 1); /* force the GNU implementation of getopt() to act like standard getopt() and not parse the entire command line - we want to be able to pass command line options to the program */
+	while ((opt = getopt(argc, argv, ":ino:s:")) != -1)
+		switch (opt) {
+		case 'i':
+		case 'n':
+			/* TODO */
+			break;
+		case 'o':
+			outfile = optarg;
+			break;
+		case 's': /* this might be removed because mkstemps() is nonstandard */
+			/* TODO */
+			break;
+		default:
+			usage();
+		}
+	for (; optind; optind--) { /* excise other arguments */
+		argc--;
+		argv++;
 	}
-	if (argv <= 0) { /* should something different happen here? */
-		fprintf(stderr, "usage: %s [-o outfile] command-line", argv0);
-		exit(EXIT_FAILURE);
-	}
+	if (argc <= 0) /* should something different happen here? */
+		usage();
 	filltempfile();
 	pline = fillcmdline(argc, argv);
 	switch (fork()) {
