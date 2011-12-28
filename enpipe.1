@@ -61,7 +61,7 @@ Process a
 document, converting it to a PDF:
 .IP
 .EX
-echo \eend | enpipe -i -o paper.dvi tex paper.tex |
+echo '\eend' | enpipe -i -o paper.dvi tex paper.tex |
 	enpipe dvips -f | ps2pdf > paper.pdf
 .EE
 .LP
@@ -86,7 +86,7 @@ That this program exists indicates a bug in Unix society.
 .LP
 There should be a more general way to insert the input filename.
 .LP
-.BR -i / -n
+.B -o
 should probably send program standard output to the terminal.
 .LP
 If attempting to launch the shell to run the program fails,
