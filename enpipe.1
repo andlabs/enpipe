@@ -1,0 +1,101 @@
+.TH ENPIPE 1
+.\" 27 december 2011
+.SH NAME
+enpipe \- pipe shoving
+.SH SYNOPSIS
+.B enpipe
+[
+.B -in
+]
+[
+.B -o
+.I outfile
+]
+[
+.B -s
+.I suffix
+]
+.I command-line
+.SH DESCRIPTION
+.I Enpipe
+runs
+.IR command-line ,
+substituting arguments consisting solely of
+.B i
+for a temporary file where standard input is sent to, effectively forcing the named program to work in a pipeline.
+If no
+.B i
+is found, the temporary file's name is added to the end of
+.IR command-line .
+The
+.B -s
+option appends
+.I suffix
+to the filename (in case the program needs it to properly open the file).
+If either
+.B -i
+or
+.B -n
+are passed (they are equivalent), this is not done (allowing
+.I enpipe
+to start a pipe or keep standard input).
+.LP
+By default, the program's standard output is copied to standard output.
+The
+.B -o
+option sends the program's standard output nowhere and, after the program runs, copies the named file to standard output instead.
+This is done even if the program fails.
+.LP
+.I Enpipe
+returns the exit status of the program run, except if something happens before the program runs.
+.SH EXAMPLES
+View an online image and a local one in
+.IR eog (1):
+.IP
+.EX
+curl http://example.com/file.png | enpipe eog i local.png
+.EE
+.LP
+Process a
+.IR tex (1)
+document, converting it to a PDF:
+.IP
+.EX
+echo \eend | enpipe -i -o paper.dvi tex paper.tex |
+	enpipe dvips -f | ps2pdf > paper.pdf
+.EE
+.LP
+(On some systems,
+.IR ps2pdf (1)
+may need an option or argument such as the dummy filename
+.B -
+to read standard input.)
+.SH DIAGNOSTICS
+.I Enpipe
+prints its own error messages and quits if something happens while trying to run the program.
+Programs are run through
+.IR sh (1);
+its diagonstics will be used as well.
+.I Enpipe
+prints an error if something happens while copying
+.I outfile
+but will quit with the error status returned by the program.
+The temporary file is never deleted.
+.SH BUGS
+That this program exists indicates a bug in Unix society.
+.LP
+There should be a more general way to insert the input filename.
+.LP
+Perhaps the insertion string should be
+.B -
+and not
+.BR i .
+.LP
+.BR -i / -n
+should probably send program standard output to the terminal.
+.LP
+If attempting to launch the shell to run the program fails,
+.I outfile
+will still be read.
+.SH AUTHOR
+Pietro Gagliardi (pietro10@mac.com)
