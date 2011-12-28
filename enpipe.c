@@ -1,6 +1,8 @@
 /* enpipe - pipe shoving
-	enpipe [-o file] command-line
+	enpipe [-in] [-o outfile] command-line
 	pietro gagliardi - 27 dec 2011 */
+
+/* TODO: 'passstdin' should probably be named something a bit more clear */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -65,13 +67,14 @@ void filltempfile(void)
 	strcat(combined, s);}
 
 /* fillcmdline:  return command line for execv */
-char **fillcmdline(int argc, char *argv[])
+/* 	passstdin is 1 to pass standard input through rather than send to file */
+char **fillcmdline(int argc, char *argv[], int passstdin)
 {
 	static char *pline[4]; /* sh, -c, line, NULL */
 		/* making it static is okay; we're only calling this function once */
 	char *combined = NULL;
 	size_t combined_len;
-	int inserted = 0;
+	int inserted = passstdin;
 
 	pline[0] = "sh";
 	pline[1] = "-c"; /* this requires a SINGLE ARGUMENT to contain the entire line, so we have to build it into a string */
@@ -80,7 +83,7 @@ char **fillcmdline(int argc, char *argv[])
 		fatal(CMDLINE_MEMEXTMSG);
 	*combined = '\0';
 	for (; argc; argc--, argv++) {
-		if (strcmp(*argv, ENPIPE_INFILE_MARK) == 0) { /* insert filename */
+		if (!passstdin && strcmp(*argv, ENPIPE_INFILE_MARK) == 0) { /* insert filename */
 			combine(tempfile);
 			inserted = 1;
 		} else
@@ -92,6 +95,23 @@ char **fillcmdline(int argc, char *argv[])
 	pline[2] = combined;
 	pline[3] = NULL; /* and terminate */
 	return pline;
+}
+
+/* zapstdout:  redirect stdout to /dev/null */
+/* 	(merely closing it caused TeX to write a ] at the beginning of the output DVI file, which is wrong) */
+void zapstdout(void)
+{
+	int nf, dupstatus;
+
+	nf = open("/dev/null", O_RDWR); /* TODO what should it be? */
+	if (nf == -1)
+		fatal("could not open /dev/null to redirect stdout");
+	dupstatus = dup2(nf, 1);
+	if (dupstatus == -1)
+		fatal("could not reroute /dev/null to stdout");
+	else if (dupstatus != 1) /* TODO is this necessary? */
+		fatal("dup2 was told to reroute /dev/null to stdout, but didn't (it went to file descriptor %d instead)", dupstatus);
+	close(nf); /* we don't need this, nor care if it fails */
 }
 
 /* copyoutfile:  copy output file into the pipeline */
@@ -127,7 +147,7 @@ void copyoutfile(void)
 /* usage:  report a syntax error and quit */
 void usage(void)
 {
-	fprintf(stderr, "usage: %s [-o outfile] command-line\n", argv0);
+	fprintf(stderr, "usage: %s [-in] [-o outfile] command-line\n", argv0);
 	exit(EXIT_FAILURE);
 }
 
@@ -135,6 +155,7 @@ int main(int argc, char *argv[])
 {
 	char **pline;
 	int exitstatus;
+	int passstdin = 0;
 	int opt;
 	extern char *optarg; /* getopt stuff */
 	extern int opterr, optind;
@@ -146,7 +167,7 @@ int main(int argc, char *argv[])
 		switch (opt) {
 		case 'i':
 		case 'n':
-			/* TODO */
+			passstdin = 1;
 			break;
 		case 'o':
 			outfile = optarg;
@@ -163,12 +184,15 @@ int main(int argc, char *argv[])
 	}
 	if (argc <= 0) /* should something different happen here? */
 		usage();
-	filltempfile();
-	pline = fillcmdline(argc, argv);
+	if (!passstdin)
+		filltempfile();
+	pline = fillcmdline(argc, argv, passstdin);
 	switch (fork()) {
 	case -1:
 		fatal("fork to run program failed");
 	case 0:
+		if (outfile != NULL) /* we don't want stdout mixing with the outfile */
+			zapstdout();
 		execv("/bin/sh", pline);
 		fatal("execv to run program failed");
 	}
