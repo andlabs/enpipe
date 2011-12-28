@@ -21,10 +21,10 @@ enpipe \- pipe shoving
 runs
 .IR command-line ,
 substituting arguments consisting solely of
-.B i
+.B -
 for a temporary file where standard input is sent to, effectively forcing the named program to work in a pipeline.
 If no
-.B i
+.B -
 is found, the temporary file's name is added to the end of
 .IR command-line .
 The
@@ -53,7 +53,7 @@ View an online image and a local one in
 .IR eog (1):
 .IP
 .EX
-curl http://example.com/file.png | enpipe eog i local.png
+curl http://example.com/file.png | enpipe eog - local.png
 .EE
 .LP
 Process a
@@ -85,11 +85,6 @@ The temporary file is never deleted.
 That this program exists indicates a bug in Unix society.
 .LP
 There should be a more general way to insert the input filename.
-.LP
-Perhaps the insertion string should be
-.B -
-and not
-.BR i .
 .LP
 .BR -i / -n
 should probably send program standard output to the terminal.

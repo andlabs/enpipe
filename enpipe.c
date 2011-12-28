@@ -14,7 +14,7 @@
 #include <sys/wait.h>
 
 /* a command line argument consisting entirely of this is replaced with the input filename */
-#define ENPIPE_INFILE_MARK "i"
+#define ENPIPE_INFILE_MARK "-"
 
 char *argv0, *outfile = NULL;
 char tempfile[] = "/tmp/enpipestdinXXXXXX";
