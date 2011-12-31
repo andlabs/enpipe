@@ -163,7 +163,7 @@ int main(int argc, char *argv[])
 	argv0 = argv[0];
 	opterr = 0; /* disable library diagonstics */
 	setenv("POSIXLY_CORRECT", "1", 1); /* force the GNU implementation of getopt() to act like standard getopt() and not parse the entire command line - we want to be able to pass command line options to the program */
-	while ((opt = getopt(argc, argv, ":ino:s:")) != -1)
+	while ((opt = getopt(argc, argv, ":ino:")) != -1)
 		switch (opt) {
 		case 'i':
 		case 'n':
@@ -171,9 +171,6 @@ int main(int argc, char *argv[])
 			break;
 		case 'o':
 			outfile = optarg;
-			break;
-		case 's': /* this might be removed because mkstemps() is nonstandard */
-			/* TODO */
 			break;
 		default:
 			usage();
@@ -202,3 +199,9 @@ int main(int argc, char *argv[])
 		copyoutfile();
 	exit(exitstatus);
 }
+
+/* other things:
+	- originally I wanted -s suffix to add a suffix to the filename
+		in case a program needed it, but a) why would it
+		b) mkstemps() is not POSIX
+*/

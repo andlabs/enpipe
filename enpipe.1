@@ -11,10 +11,6 @@ enpipe \- pipe shoving
 .B -o
 .I outfile
 ]
-[
-.B -s
-.I suffix
-]
 .I command-line
 .SH DESCRIPTION
 .I Enpipe
@@ -27,11 +23,6 @@ If no
 .B -
 is found, the temporary file's name is added to the end of
 .IR command-line .
-The
-.B -s
-option appends
-.I suffix
-to the filename (in case the program needs it to properly open the file).
 If either
 .B -i
 or
