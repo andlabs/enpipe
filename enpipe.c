@@ -2,6 +2,10 @@
 	enpipe [-in] [-o outfile] command-line
 	pietro gagliardi - 27 dec 2011 */
 
+/* Copyright by Pietro Gagliardi, 2011
+	This source released under the MIT license (http://www.opensource.org/licenses/MIT), aka Expat license.
+	If you have the full source distribution (such as from my source repository), check the COPYING file. */
+
 /* TODO: 'passstdin' should probably be named something a bit more clear */
 
 #include <stdio.h>
