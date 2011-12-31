@@ -61,21 +61,33 @@ echo '\eend' | enpipe -i -o paper.dvi tex paper.tex |
 may need an option or argument such as the dummy filename
 .B -
 to read standard input.)
+.SH FILES
+.B /tmp/enpipestdinXXXXXX
+.IP
+Standard input is shoved to these files.
 .SH DIAGNOSTICS
 .I Enpipe
 prints its own error messages and quits if something happens while trying to run the program.
 Programs are run through
 .IR sh (1);
-its diagonstics will be used as well.
+its diagnostics will be used as well.
 .I Enpipe
 prints an error if something happens while copying
 .I outfile
 but will quit with the error status returned by the program.
-The temporary file is never deleted.
+The temporary standard input file is never deleted.
 .SH BUGS
-That this program exists indicates a bug in Unix society.
+That this program exists.
+(I may be thinking the problem \(em that some modern Unix programs don't like to work in pipelines \(em may be larger than it actually is, but this program is here anwyay.
+Another issue I have is that more programs
+.I require
+.B -
+for standard input and output nowadays, but that's a problem
+.I enpipe
+can't fix.)
 .LP
 There should be a more general way to insert the input filename.
+If there is a program that uses filename to determine file type, a provision for that would also be desirable.
 .LP
 .B -o
 should probably send program standard output to the terminal.
@@ -83,5 +95,13 @@ should probably send program standard output to the terminal.
 If attempting to launch the shell to run the program fails,
 .I outfile
 will still be read.
+In fact, if this behavior is reversed, wouldn't that make
+.I enpipe
+not behave like an actual pipe program?
 .SH AUTHOR
 Pietro Gagliardi (pietro10@mac.com)
+.SH LICENSES
+.I Enpipe
+is licensed under the ? ().
+.LP
+This manpage is licensed under the ? ().

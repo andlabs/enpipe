@@ -125,19 +125,28 @@ void copyoutfile(void)
 		the program probably failed; let's make its error status available anyway */
 	fid = open(outfile, O_RDONLY);
 	if (fid == -1) {
-		fprintf(stderr, "%s: can't open %s for copying program output\n", argv0, outfile);
+		char *e;
+
+		e = strerror(errno);
+		fprintf(stderr, "%s: can't open %s for copying program output: %s\n", argv0, outfile, e);
 		return;
 	}
 	for (;;) {
 		n = read(fid, buf, BUFSIZ);
 		if (n == -1) {
-			fprintf(stderr, "%s: reading from %s failed", argv0, outfile);
+			char *e;
+
+			e = strerror(errno);
+			fprintf(stderr, "%s: reading from %s failed: %s\n", argv0, outfile, e);
 			break;
 		}
 		if (n == 0)
 			break;
 		if (write(1, buf, n) != n) {
-			fprintf(stderr, "%s: writing %s to stdout failed", argv0, outfile);
+			char *e;
+
+			e = strerror(errno);
+			fprintf(stderr, "%s: writing %s to stdout failed: %s\n", argv0, outfile, e);
 			break;
 		}
 	}
