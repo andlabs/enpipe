@@ -1,0 +1,87 @@
+ENPIPE(1)                                                            ENPIPE(1)
+
+
+
+NNAAMMEE
+       enpipe - pipe shoving
+
+SSYYNNOOPPSSIISS
+       eennppiippee [ --iinn ] [ --oo _o_u_t_f_i_l_e ] _c_o_m_m_a_n_d_-_l_i_n_e
+
+DDEESSCCRRIIPPTTIIOONN
+       _E_n_p_i_p_e runs _c_o_m_m_a_n_d_-_l_i_n_e, substituting arguments consisting solely of --
+       for a temporary file where standard input is sent to, effectively forc‐
+       ing  the  named  program  to work in a pipeline.  If no -- is found, the
+       temporary file's name is added to the end of _c_o_m_m_a_n_d_-_l_i_n_e.   If  either
+       --ii  or  --nn are passed (they are equivalent), this is not done (allowing
+       _e_n_p_i_p_e to start a pipe or keep standard input).
+
+       By default, the program's standard output is copied to standard output.
+       The  --oo  option  sends the program's standard output nowhere and, after
+       the program runs, copies the named file  to  standard  output  instead.
+       This is done even if the program fails.
+
+       _E_n_p_i_p_e  returns the exit status of the program run, except if something
+       happens before the program runs.
+
+EEXXAAMMPPLLEESS
+       View an online image and a local one in _e_o_g(1):
+
+              curl http://example.com/file.png | enpipe eog - local.png
+
+       Process a _t_e_x(1) document, converting it to a PDF:
+
+              echo '\end' | enpipe -i -o paper.dvi tex paper.tex |
+                   enpipe dvips -f | ps2pdf > paper.pdf
+
+       (On some systems, _p_s_2_p_d_f(1) may need an option or argument such as  the
+       dummy filename -- to read standard input.)
+
+FFIILLEESS
+       //ttmmpp//eennppiippeessttddiinnXXXXXXXXXXXX
+
+              Standard input is shoved to these files.
+
+DDIIAAGGNNOOSSTTIICCSS
+       _E_n_p_i_p_e  prints  its  own  error messages and quits if something happens
+       while trying to run the program.  Programs are run through  _s_h(1);  its
+       diagnostics  will be used as well.  _E_n_p_i_p_e prints an error if something
+       happens while copying _o_u_t_f_i_l_e but  will  quit  with  the  error  status
+       returned  by  the  program.  The temporary standard input file is never
+       deleted.
+
+BBUUGGSS
+       That this program exists.  (I may be thinking the problem —  that  some
+       modern  Unix  programs  don't like to work in pipelines — may be larger
+       than it actually is, but this program is here anwyay.  Another issue  I
+       have  is  that  more  programs  _r_e_q_u_i_r_e -- for standard input and output
+       nowadays, but that's a problem _e_n_p_i_p_e can't fix.)
+
+       There should be a more general way to insert the  input  filename.   If
+       there  is a program that uses filename to determine file type, a provi‐
+       sion for that would also be desirable.
+
+       --oo should probably send program standard output to the terminal.
+
+       If attempting to launch the shell to run  the  program  fails,  _o_u_t_f_i_l_e
+       will  still  be  read.  In fact, if this behavior is reversed, wouldn't
+       that make _e_n_p_i_p_e not behave like an actual pipe program?
+
+AAUUTTHHOORR
+       Pietro Gagliardi (pietro10@mac.com)
+
+LLIICCEENNSSEESS
+       _E_n_p_i_p_e  is   licensed   under   the   MIT   License   (http://www.open‐
+       source.org/licenses/MIT), alternatively titled Expat License.
+
+       This manpage is licensed as so:
+
+              This work is licensed under the Creative Commons Attribution 3.0
+              Unported License.   To  view  a  copy  of  this  license,  visit
+              http://creativecommons.org/licenses/by/3.0/  or send a letter to
+              Creative Commons, 444 Castro Street, Suite 900,  Mountain  View,
+              California, 94041, USA.
+
+
+
+                                                                     ENPIPE(1)
